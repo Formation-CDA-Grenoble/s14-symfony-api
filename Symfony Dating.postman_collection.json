@@ -10,7 +10,22 @@
 			"item": [
 				{
 					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "737b3a19-c22f-4851-8e15-811a1202fae1",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
+						"auth": {
+							"type": "noauth"
+						},
 						"method": "POST",
 						"header": [],
 						"body": {
@@ -55,7 +70,13 @@
 					"name": "Get Current User",
 					"request": {
 						"method": "GET",
-						"header": [],
+						"header": [
+							{
+								"key": "",
+								"type": "text",
+								"value": ""
+							}
+						],
 						"url": {
 							"raw": "{{baseUrl}}/current-user",
 							"host": [
@@ -63,6 +84,57 @@
 							],
 							"path": [
 								"current-user"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Users",
+			"item": [
+				{
+					"name": "Get All",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/user/",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"user",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Profile",
+			"item": [
+				{
+					"name": "Get Visits",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/profile/visits",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"profile",
+								"visits"
 							]
 						}
 					},
@@ -109,14 +181,6 @@
 					""
 				]
 			}
-		}
-	],
-	"variable": [
-		{
-			"id": "78ba19db-5023-4ad7-8624-fcc63680d540",
-			"key": "baseUrl",
-			"value": "http://127.0.0.1:8000",
-			"type": "string"
 		}
 	],
 	"protocolProfileBehavior": {}

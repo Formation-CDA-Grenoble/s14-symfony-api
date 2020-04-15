@@ -19,7 +19,8 @@ security:
             anonymous: lazy
             provider: app_user_provider
 
-            logout: ~
+            logout:
+                path: /logout
 
             guard:
                 authenticators:

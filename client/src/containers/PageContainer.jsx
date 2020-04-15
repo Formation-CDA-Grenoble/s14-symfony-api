@@ -3,14 +3,16 @@ import Axios from 'axios';
 
 const { REACT_APP_API_BASE_URL } = process.env;
 
-export default class PageContainer extends Component
+class PageContainer extends Component
 {
   state = {
-    currentUser: {
-      apiToken: null,
-      data: null,
-    },
+    currentUser: null,
+    fecthingUser: true,
     messages: [],
+  }
+
+  componentDidMount = () => {
+    this.refreshCurrentUser();
   }
 
   login = async (email, password) => {
@@ -25,15 +27,13 @@ export default class PageContainer extends Component
         {
           email,
           password,
+        },
+        {
+          withCredentials: true,
         }
       );
 
-      const { currentUser } = this.state;
-      currentUser.apiToken = response.data.token;
-  
-      await this.setState({ currentUser });
-  
-      this.refreshCurrentUser();
+      await this.setState({ currentUser: response.data });
 
       message = "Vous êtes maintenant connecté";
       type = "success";
@@ -67,12 +67,16 @@ export default class PageContainer extends Component
     this.setState({ messages: [...messages, { message, type } ] })
   }
 
-  logout = () => {
-    this.setState({
-      currentUser: {
-        apiToken: null,
-        data: null,
+  logout = async () => {
+    await Axios.get(
+      `${REACT_APP_API_BASE_URL}/logout`,
+      {
+        withCredentials: true,
       }
+    );
+
+    this.setState({
+      currentUser: null,
     });
 
     const { messages } = this.state;
@@ -83,19 +87,31 @@ export default class PageContainer extends Component
   }
 
   refreshCurrentUser = async () => {
-    const response = await Axios.get(
-      `${REACT_APP_API_BASE_URL}/current-user`,
-      {
-        headers: {
-          'X-AUTH-TOKEN': this.state.currentUser.apiToken,
+    try {
+      const response = await Axios.get(
+        `${REACT_APP_API_BASE_URL}/current-user`,
+        {
+          withCredentials: true,
         }
-      }
-    )
-    
-    const { currentUser } = this.state;
-    currentUser.data = response.data;
+      )
+      
+      await this.setState({ currentUser: response.data });
+    }
+    catch (error) {
+      const match = error.message.match(/^Request failed with status code (\d+)$/);
+      const statusCode = Number(match[1]);
+      
+      switch (statusCode) {
+        case 401:
+          console.info('User disconnected');
+          break;
 
-    await this.setState({ currentUser });
+        default:
+          console.error('Error while refreshing user data');
+      }
+    }
+
+    this.setState({ fecthingUser: false });
   }
 
   deleteMessage = (index) => () => {
@@ -109,10 +125,11 @@ export default class PageContainer extends Component
 
     const ComponentName = component;
 
-    const { currentUser, messages } = this.state;
+    const { currentUser, fecthingUser, messages } = this.state;
 
     const currentUserProps = {
-      ...currentUser,
+      data: currentUser,
+      fecthing: fecthingUser,
       actions: {
         login: this.login,
         logout: this.logout,
@@ -132,3 +149,6 @@ export default class PageContainer extends Component
     )
   }
 }
+
+// export default withCookies(PageContainer);
+export default PageContainer;

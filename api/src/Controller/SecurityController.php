@@ -64,11 +64,17 @@ class SecurityController extends AbstractController
                 'main'          // the name of your firewall in security.yaml
             );
     
-            return new JsonResponse([ 'token' => $user->getApiToken() ]);
+            return $this->redirectToRoute('current-user');
+            // return new JsonResponse([ 'token' => $user->getApiToken() ]);
         } else {
             throw new UnauthorizedHttpException('', 'Bad password for user "' . $email . '".');
         }
     }
+
+    /**
+     * @Route("/logout", name="logout")
+     */
+    public function logout() { }
 
     /**
      * @IsGranted("ROLE_USER")
