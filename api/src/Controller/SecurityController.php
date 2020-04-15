@@ -12,7 +12,9 @@ use Symfony\Component\Serializer\SerializerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Component\Security\Guard\GuardAuthenticatorHandler;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 class SecurityController extends AbstractController
@@ -51,7 +53,7 @@ class SecurityController extends AbstractController
         $user = $this->userRepository->findOneBy([ 'email' => $email ]);
 
         if (is_null($user)) {
-            throw new BadRequestHttpException('User "' . $email . '" does not exist.');
+            throw new NotFoundHttpException('User "' . $email . '" does not exist.');
         }
 
         if ($this->passwordEncoder->isPasswordValid($user, $password)) {
@@ -62,16 +64,11 @@ class SecurityController extends AbstractController
                 'main'          // the name of your firewall in security.yaml
             );
     
-            return new JsonResponse([ 'message' => 'Ca marche!!!' ]);
+            return new JsonResponse([ 'token' => $user->getApiToken() ]);
         } else {
-            return new JsonResponse([ 'message' => 'Mauvais mot de passe' ]);
+            throw new UnauthorizedHttpException('', 'Bad password for user "' . $email . '".');
         }
     }
-
-    /**
-     * @Route("/logout", name="logout")
-     */
-    public function logout() { }
 
     /**
      * @IsGranted("ROLE_USER")

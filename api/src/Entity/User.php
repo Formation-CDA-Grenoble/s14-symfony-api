@@ -17,6 +17,9 @@ class User implements UserInterface, JsonSerializable
         return [
             'id' => $this->id,
             'email' => $this->email,
+            'roles' => $this->roles,
+            'firstName' => $this->firstName,
+            'lastName' => $this->lastName,
         ];
     }
 

@@ -55,6 +55,7 @@ class UserFixtures extends CustomFixtures implements DependentFixtureInterface
             ->setUpdatedAt($updatedAt)
             ->setCity($this->cities[rand(0, sizeof($this->cities) - 1)])
             ->setRoles(['ROLE_ADMIN'])
+            ->setApiToken($this->generateToken())
         ;
 
         if ($gender === 0) {
@@ -87,6 +88,7 @@ class UserFixtures extends CustomFixtures implements DependentFixtureInterface
             ->setCreatedAt($createdAt)
             ->setUpdatedAt($updatedAt)
             ->setCity($this->cities[rand(0, sizeof($this->cities) - 1)])
+            ->setApiToken($this->generateToken())
         ;
 
         if ($gender === 0) {
@@ -103,5 +105,10 @@ class UserFixtures extends CustomFixtures implements DependentFixtureInterface
         return array(
             CityFixtures::class
         );
+    }
+
+    private function generateToken()
+    {
+        return rtrim(strtr(base64_encode(random_bytes(32)), '+/', '-_'), '=');
     }
 }
