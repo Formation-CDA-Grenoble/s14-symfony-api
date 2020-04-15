@@ -7,8 +7,17 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * @ORM\Entity(repositoryClass="App\Repository\VisitRepository")
  */
-class Visit
+class Visit implements \JsonSerializable
 {
+    public function jsonSerialize(): array {
+        return [
+            'id' => $this->id,
+            'createdAt' => $this->createdAt,
+            'visitorId' => $this->visitor->getId(),
+            'visitedId' => $this->visited->getId(),
+        ];
+    }
+
     /**
      * @ORM\Id()
      * @ORM\GeneratedValue()

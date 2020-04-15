@@ -7,8 +7,16 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * @ORM\Entity(repositoryClass="App\Repository\PictureRepository")
  */
-class Picture
+class Picture implements \JsonSerializable
 {
+    public function jsonSerialize(): array {
+        return [
+            'id' => $this->id,
+            'url' => $this->url,
+            'createdAt' => $this->createdAt,
+        ];
+    }
+
     /**
      * @ORM\Id()
      * @ORM\GeneratedValue()

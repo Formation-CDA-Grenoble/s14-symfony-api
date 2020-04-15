@@ -1,8 +1,8 @@
 import React from 'react';
-import { HomePage } from './pages';
+import { HomePage, ProfileListPage } from './pages';
 
 const App = () =>
-  <HomePage />
+  <ProfileListPage />
 ;
 
 export default App;

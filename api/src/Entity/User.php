@@ -20,6 +20,12 @@ class User implements UserInterface, JsonSerializable
             'roles' => $this->roles,
             'firstName' => $this->firstName,
             'lastName' => $this->lastName,
+            'birthDate' => $this->birthDate,
+            'gender' => $this->gender,
+            'createdAt' => $this->createdAt,
+            'updatedAt' => $this->updatedAt,
+            'city' => $this->city,
+            'galleryPictures' => $this->galleryPictures->getValues(),
         ];
     }
 
