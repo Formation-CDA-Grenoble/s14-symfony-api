@@ -18,20 +18,25 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 class ProfileController extends AbstractController
 {
     private $entityManager;
+    private $visitRepository;
 
-    public function __construct(EntityManagerInterface $entityManager)
+    public function __construct(
+        EntityManagerInterface $entityManager,
+        VisitRepository $visitRepository
+    )
     {
         $this->entityManager = $entityManager;
+        $this->visitRepository = $visitRepository;
     }
 
     /**
      * @Route("/visits", name="visits")
      */
-    public function getVisits(VisitRepository $visitRepository)
+    public function getVisits()
     {
         $user = $this->getUser();
 
-        $visits = $visitRepository->findBy(['visitor' => $user]);
+        $visits = $this->visitRepository->findBy(['visitor' => $user]);
 
         return new JsonResponse($visits);
     }
@@ -43,14 +48,23 @@ class ProfileController extends AbstractController
     {
         $visitor = $this->getUser();
 
-        $visit = new Visit();
+        $existingVisit = $this->visitRepository->findOneBy([
+            'visitor' => $visitor,
+            'visited' => $visited,
+        ]);
 
-        $visit->setVisitor($visitor);
-        $visit->setVisited($visited);
+        if ($existingVisit === null) {
+            $visit = new Visit();
 
-        $this->entityManager->persist($visit);
-        $this->entityManager->flush();
+            $visit->setVisitor($visitor);
+            $visit->setVisited($visited);
 
-        return new JsonResponse($visit);
+            $this->entityManager->persist($visit);
+            $this->entityManager->flush();
+
+            return new JsonResponse($visit);
+        } else {
+            return new JsonResponse($existingVisit);
+        }
     }
 }
