@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import { Navbar, Nav, Button, Spinner } from 'react-bootstrap';
 import Logo from '../../logo.svg';
 import LoginForm from './LoginForm';
+import { Link } from 'react-router-dom';
 
 const CustomNavBar = ({ global }) =>
   <Navbar bg="dark" variant="dark">
@@ -16,11 +17,16 @@ const CustomNavBar = ({ global }) =>
       Symfony Dating
     </Navbar.Brand>
     <Nav className="mr-auto">
-      <Nav.Link href="#home">Home</Nav.Link>
-      <Nav.Link href="#features">Features</Nav.Link>
-      <Nav.Link href="#pricing">Pricing</Nav.Link>
+      <Link to="/" className="nav-link">Accueil</Link>
+      { global.currentUser.data !== null ?
+        <Fragment>
+          <Link to="/profiles" className="nav-link">Profils</Link>
+        </Fragment>
+        :
+        null
+      }
     </Nav>
-    { global.currentUser.fecthing ?
+    { global.currentUser.fetching ?
       <Spinner animation="border" variant="light" />
       : global.currentUser.data === null ?
         <LoginForm global={global} />

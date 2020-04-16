@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Repository\VisitRepository;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 /**
@@ -13,6 +14,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 class ProfileController extends AbstractController
 {
     /**
+     * @IsGranted("ROLE_USER")
      * @Route("/visits", name="visits")
      */
     public function getVisits(VisitRepository $visitRepository)

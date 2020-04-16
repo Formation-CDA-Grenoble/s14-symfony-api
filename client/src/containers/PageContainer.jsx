@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import Axios from 'axios';
+import { Redirect } from 'react-router-dom';
 
 const { REACT_APP_API_BASE_URL } = process.env;
 
@@ -7,11 +8,13 @@ class PageContainer extends Component
 {
   state = {
     currentUser: null,
-    fecthingUser: true,
+    fetchingUser: true,
     messages: [],
   }
 
   componentDidMount = () => {
+    console.log("Mounting PageContainer")
+
     this.refreshCurrentUser();
   }
 
@@ -111,7 +114,7 @@ class PageContainer extends Component
       }
     }
 
-    this.setState({ fecthingUser: false });
+    this.setState({ fetchingUser: false });
   }
 
   deleteMessage = (index) => () => {
@@ -121,15 +124,21 @@ class PageContainer extends Component
   }
 
   render = () => {
-    const { component } = this.props;
+    const { component, needAuth } = this.props;
+
+    const { currentUser, fetchingUser, messages } = this.state;
+
+    if (!fetchingUser) {
+      if (needAuth && currentUser === null) {
+        return <Redirect to="/" />;
+      }
+    }
 
     const ComponentName = component;
 
-    const { currentUser, fecthingUser, messages } = this.state;
-
     const currentUserProps = {
       data: currentUser,
-      fecthing: fecthingUser,
+      fetching: fetchingUser,
       actions: {
         login: this.login,
         logout: this.logout,
@@ -150,5 +159,4 @@ class PageContainer extends Component
   }
 }
 
-// export default withCookies(PageContainer);
 export default PageContainer;

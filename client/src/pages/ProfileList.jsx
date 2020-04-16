@@ -55,7 +55,7 @@ class ProfileList extends Component
         <ul className="grid-4">
           {users.map( (user, index) =>
             <li key={index}>
-              <ProfilePreview user={user} visited={visits.includes(user.id)} />
+              <ProfilePreview user={user} visited={visits.includes(user.id)} showLink />
             </li>
           )}
         </ul>
@@ -65,5 +65,5 @@ class ProfileList extends Component
 }
 
 export default () =>
-  <PageContainer component={ProfileList} />
+  <PageContainer component={ProfileList} needAuth={true} />
 ;
