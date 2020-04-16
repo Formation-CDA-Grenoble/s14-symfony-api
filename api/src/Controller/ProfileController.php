@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\User;
 use App\Entity\Visit;
+use App\Repository\UserRepository;
 use App\Repository\VisitRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Routing\Annotation\Route;
@@ -22,10 +23,12 @@ class ProfileController extends AbstractController
 
     public function __construct(
         EntityManagerInterface $entityManager,
+        UserRepository $userRepository,
         VisitRepository $visitRepository
     )
     {
         $this->entityManager = $entityManager;
+        $this->userRepository = $userRepository;
         $this->visitRepository = $visitRepository;
     }
 
@@ -36,9 +39,21 @@ class ProfileController extends AbstractController
     {
         $user = $this->getUser();
 
-        $visits = $this->visitRepository->findBy(['visitor' => $user]);
+        $visits = $user->getSentVisits();
 
-        return new JsonResponse($visits);
+        return new JsonResponse($visits->getValues());
+    }
+
+    /**
+     * @Route("/visitors", name="visitors")
+     */
+    public function getVisitors()
+    {
+        $visited = $this->getUser();
+
+        $visitors = $this->userRepository->getVisitors($visited);
+
+        return new JsonResponse($visitors);
     }
 
     /**

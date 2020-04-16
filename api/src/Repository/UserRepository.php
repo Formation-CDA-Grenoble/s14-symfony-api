@@ -36,22 +36,28 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         $this->_em->flush();
     }
 
-    // /**
-    //  * @return User[] Returns an array of User objects
-    //  */
-    /*
-    public function findByExampleField($value)
+    /**
+     * @return User[] Returns an array of User objects
+     */
+    public function getVisitors(User $visited)
     {
-        return $this->createQueryBuilder('u')
-            ->andWhere('u.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('u.id', 'ASC')
-            ->setMaxResults(10)
+        // Crée un Query builder afin de générer une requête SQL précise
+        return $this
+            // Associe les entités User à l'identifiant "u"
+            ->createQueryBuilder('u')
+            // Ajoute une jointure avec les entités Visit en les associant à l'identifiant "v"
+            // en précisant que les visites concernées sont celles qui ont été envoyées par les utilisateurs
+            ->join('u.sentVisits', 'v')
+            // Ajoute un critère de sélection: pour chaque visite, l'utilisateur qui a reçu la visite
+            // doit être celui qui a été passé en paramètre de la fonction
+            ->andWhere('v.visited = :user')
+            ->setParameter('user', $visited)
+            // Génère la requête SQL correspondante
             ->getQuery()
+            // Renvoie les résultats de la requête
             ->getResult()
         ;
     }
-    */
 
     /*
     public function findOneBySomeField($value): ?User
