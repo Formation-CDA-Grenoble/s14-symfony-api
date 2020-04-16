@@ -1,36 +1,30 @@
 import React, { Component } from 'react';
-import Axios from 'axios';
 import { Layout, ProfilePreview } from '../components';
 import PageContainer from '../containers/PageContainer';
+import Axios from 'axios';
 import { Spinner } from 'react-bootstrap';
 
 const { REACT_APP_API_BASE_URL } = process.env;
 
-class ProfileList extends Component
-{
+class Visitors extends Component {
   state = {
     users: null,
   }
 
   componentDidMount = async () => {
-    this.refresh();
-  }
-
-  refresh = async () => {
-    const usersData = await Axios.get(
-      `${REACT_APP_API_BASE_URL}/user/`,
+    const response = await Axios.get(
+      `${REACT_APP_API_BASE_URL}/profile/visitors`,
       {
         withCredentials: true,
-      },
-    );
+      }
+    )
 
-    this.setState({
-      users: usersData.data,
-    });
+    this.setState({ users: response.data });
   }
-  
+
   render = () => {
     const { global } = this.props;
+
     const { users } = this.state;
 
     if (users === null || global.currentUser.data === null) {
@@ -47,6 +41,7 @@ class ProfileList extends Component
 
     return (
       <Layout global={global}>
+        <h1>Dernières visites sur votre profil</h1>
         <ul className="grid-4">
           {users.map( (user, index) =>
             <li key={index}>
@@ -60,5 +55,5 @@ class ProfileList extends Component
 }
 
 export default () =>
-  <PageContainer component={ProfileList} needAuth={true} />
+  <PageContainer component={Visitors} needAuth />
 ;

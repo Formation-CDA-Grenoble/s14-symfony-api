@@ -26,6 +26,7 @@ class User implements UserInterface, JsonSerializable
             'updatedAt' => $this->updatedAt,
             'city' => $this->city,
             'galleryPictures' => $this->galleryPictures->getValues(),
+            'sentVisits' => $this->sentVisits->getValues(),
         ];
     }
 
