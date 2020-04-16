@@ -52,6 +52,8 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
             // doit être celui qui a été passé en paramètre de la fonction
             ->andWhere('v.visited = :user')
             ->setParameter('user', $visited)
+            // Ordonne les résultats par date, de la visite la plus récente à la plus ancienne
+            ->orderBy('v.createdAt', 'DESC')
             // Génère la requête SQL correspondante
             ->getQuery()
             // Renvoie les résultats de la requête
