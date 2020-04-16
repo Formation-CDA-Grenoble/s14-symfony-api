@@ -42,6 +42,11 @@ class Visit implements \JsonSerializable
      */
     private $visited;
 
+    public function __construct()
+    {
+        $this->setCreatedAt(new \DateTime());
+    }
+
     public function getId(): ?int
     {
         return $this->id;

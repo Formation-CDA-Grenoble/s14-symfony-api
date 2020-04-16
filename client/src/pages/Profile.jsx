@@ -57,6 +57,14 @@ class Profile extends Component
           return;
       }
     }
+
+    await Axios.post(
+      `${REACT_APP_API_BASE_URL}/profile/visit/${id}`,
+      null,
+      {
+        withCredentials: true,
+      }
+    );
   }
 
   render = () => {
