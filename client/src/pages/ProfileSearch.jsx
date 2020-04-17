@@ -12,15 +12,31 @@ class ProfileSearch extends Component
 {
   state = {
     users: [],
+    cities: null,
     formData: {
       gender: 0,
+      city: null,
     },
     searching: false,
   }
 
-  handleGenderChange = (event) => {
+  componentDidMount = async () => {
+    const response = await Axios.get(
+      `${REACT_APP_API_BASE_URL}/city`
+    );
+
+    this.setState({ cities: response.data });
+  }
+
+  handleFormChange = (propName) => (event) => {
     const { formData } = this.state;
-    this.setState({ formData: {...formData, gender: Number(event.target.value) } })
+    let newValue;
+    if (event.target.value === '') {
+      newValue = null
+    } else {
+      newValue = Number(event.target.value);
+    }
+    this.setState({ formData: {...formData, [propName]: newValue } })
   }
 
   submitSearch = async (event) => {
@@ -43,7 +59,15 @@ class ProfileSearch extends Component
 
   render = () => {
     const { global } = this.props;
-    const { formData, users, searching } = this.state;
+    const { formData, users, cities, searching } = this.state;
+
+    if (cities === null) {
+      return (
+        <Layout global={global}>
+          <Spinner animation="border" variant="info" />
+        </Layout>
+      );
+    }
 
     let visits = []
     if (global.currentUser.data !== null) {
@@ -57,9 +81,18 @@ class ProfileSearch extends Component
         <Form onSubmit={this.submitSearch}>
           <Form.Group controlId="gender">
             <Form.Label>Sexe</Form.Label>
-            <Form.Control as="select" onChange={this.handleGenderChange} value={formData.gender}>
+            <Form.Control as="select" onChange={this.handleFormChange('gender')} value={formData.gender}>
               <option value={0}>Femme</option>
               <option value={1}>Homme</option>
+            </Form.Control>
+          </Form.Group>
+          <Form.Group controlId="city">
+            <Form.Label>Ville</Form.Label>
+            <Form.Control as="select" onChange={this.handleFormChange('city')} value={formData.city}>
+              <option value={null}></option>
+              {cities.map( (city, index) =>
+                <option key={index} value={city.id}>{city.name}</option>
+              )}
             </Form.Control>
           </Form.Group>
           <Button type="submit" disabled={searching}>

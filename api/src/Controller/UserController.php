@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\User;
+use App\Repository\CityRepository;
 use App\Repository\UserRepository;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
@@ -15,10 +16,15 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 class UserController extends AbstractController
 {
     private $userRepository;
+    private $cityRepository;
 
-    public function __construct(UserRepository $userRepository)
+    public function __construct(
+        UserRepository $userRepository,
+        CityRepository $cityRepository
+    )
     {
         $this->userRepository = $userRepository;
+        $this->cityRepository = $cityRepository;
     }
 
     /**
@@ -49,6 +55,7 @@ class UserController extends AbstractController
         $users = $this->userRepository->findBy(
             [
                 'gender' => $data->gender,
+                'city' => $this->cityRepository->find($data->city),
             ],
             ['createdAt' => 'DESC']
         );
