@@ -52,11 +52,14 @@ class UserController extends AbstractController
     {
         $data = \json_decode($request->getContent());
 
+        $criteria = ['gender' => $data->gender];
+        
+        if (!is_null($data->city)) {
+            $criteria['city'] = $this->cityRepository->find($data->city);
+        }
+
         $users = $this->userRepository->findBy(
-            [
-                'gender' => $data->gender,
-                'city' => $this->cityRepository->find($data->city),
-            ],
+            $criteria,
             ['createdAt' => 'DESC']
         );
 
