@@ -1,5 +1,5 @@
 import React from 'react';
-import { HomePage, ProfileListPage, NotFoundPage, ProfilePage, VisitorsPage } from './pages';
+import { HomePage, ProfileListPage, NotFoundPage, ProfilePage, VisitorsPage, ProfileSearchPage } from './pages';
 import { BrowserRouter, Switch, Route } from 'react-router-dom';
 
 const App = () =>
@@ -7,6 +7,7 @@ const App = () =>
     <Switch>
       <Route exact path="/" component={HomePage} />
       <Route exact path="/profiles" component={ProfileListPage} />
+      <Route exact path="/profiles/search" component={ProfileSearchPage} />
       <Route exact path="/profiles/:id(\d+)" component={ProfilePage} />
       <Route exact path="/profile/visitors" component={VisitorsPage} />
       <Route exact path="/notfound" component={NotFoundPage} />
