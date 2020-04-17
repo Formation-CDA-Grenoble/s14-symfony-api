@@ -3,11 +3,12 @@
 namespace App\Repository;
 
 use App\Entity\User;
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use App\Repository\CityRepository;
 use Doctrine\Persistence\ManagerRegistry;
-use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
-use Symfony\Component\Security\Core\User\PasswordUpgraderInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Security\Core\User\PasswordUpgraderInterface;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 
 /**
  * @method User|null find($id, $lockMode = null, $lockVersion = null)
@@ -17,9 +18,13 @@ use Symfony\Component\Security\Core\User\UserInterface;
  */
 class UserRepository extends ServiceEntityRepository implements PasswordUpgraderInterface
 {
-    public function __construct(ManagerRegistry $registry)
+    private $cityRepository;
+
+    public function __construct(ManagerRegistry $registry, CityRepository $cityRepository)
     {
         parent::__construct($registry, User::class);
+
+        $this->cityRepository = $cityRepository;
     }
 
     /**
@@ -59,6 +64,36 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
             // Renvoie les résultats de la requête
             ->getResult()
         ;
+    }
+
+    public function search(array $params)
+    {
+        list($minAge, $maxAge) = $params['age'];
+
+        $minDate = (new \DateTime())->sub(new \DateInterval('P' . $maxAge . 'Y'));
+        $maxDate = (new \DateTime())->sub(new \DateInterval('P' . $minAge . 'Y'));
+
+        $query = $this
+            ->createQueryBuilder('u')
+            ->andWhere('u.gender = :gender')
+            ->setParameter('gender', $params['gender'])
+            ->andWhere('u.birthDate >= :minDate')
+            ->andWhere('u.birthDate <= :maxDate')
+            ->setParameter('minDate', $minDate)
+            ->setParameter('maxDate', $maxDate)
+            ->orderBy('u.createdAt', 'DESC')
+        ;
+
+        if (!is_null($params['city'])) {
+            $city = $this->cityRepository->find($params['city']);
+
+            $query = $query
+                ->andWhere('u.city = :city')
+                ->setParameter('city', $city)
+            ;
+        }
+
+        return $query->getQuery()->getResult();
     }
 
     /*

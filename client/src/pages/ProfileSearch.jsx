@@ -5,6 +5,7 @@ import { Form, Button, Spinner } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
 import Axios from 'axios';
+import { Range } from 'rc-slider';
 
 const { REACT_APP_API_BASE_URL } = process.env;
 
@@ -16,6 +17,7 @@ class ProfileSearch extends Component
     formData: {
       gender: 0,
       city: null,
+      age: [18, 60],
     },
     searching: false,
   }
@@ -37,6 +39,11 @@ class ProfileSearch extends Component
       newValue = Number(event.target.value);
     }
     this.setState({ formData: {...formData, [propName]: newValue } })
+  }
+
+  handleAgeChange = (value) => {
+    const { formData } = this.state;
+    this.setState({ formData: {...formData, age: value } })
   }
 
   submitSearch = async (event) => {
@@ -94,6 +101,17 @@ class ProfileSearch extends Component
                 <option key={index} value={city.id}>{city.name}</option>
               )}
             </Form.Control>
+          </Form.Group>
+          <Form.Group>
+            <Form.Label>Âge</Form.Label>
+              <div>{formData.age[0]} - {formData.age[1]}</div>
+            <Range
+              onChange={this.handleAgeChange}
+              value={formData.age}
+              allowCross={false}
+              min={18}
+              max={60}
+            />
           </Form.Group>
           <Button type="submit" disabled={searching}>
             <FontAwesomeIcon icon={faSearch} />

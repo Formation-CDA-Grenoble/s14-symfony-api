@@ -9,6 +9,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 /**
  * @Route("/user", name="user_")
@@ -50,18 +51,21 @@ class UserController extends AbstractController
      */
     public function search(Request $request): JsonResponse
     {
-        $data = \json_decode($request->getContent());
+        $data = \json_decode($request->getContent(), true);
 
-        $criteria = ['gender' => $data->gender];
-        
-        if (!is_null($data->city)) {
-            $criteria['city'] = $this->cityRepository->find($data->city);
+        $requiredProps = [
+            'gender' => null,
+            'city' => null,
+            'age' => null,
+        ];
+
+        $missingProps = array_diff_key($requiredProps, $data);
+
+        if (!empty($missingProps)) {
+            throw new BadRequestHttpException('Missing properties: ' . join(', ', array_keys($missingProps)) . '.');
         }
 
-        $users = $this->userRepository->findBy(
-            $criteria,
-            ['createdAt' => 'DESC']
-        );
+        $users = $this->userRepository->search($data);
 
         return new JsonResponse($users);
     }

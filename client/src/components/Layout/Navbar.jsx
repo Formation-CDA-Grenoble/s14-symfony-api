@@ -21,6 +21,7 @@ const CustomNavBar = ({ global }) =>
       { global.currentUser.data !== null ?
         <Fragment>
           <Link to="/profiles" className="nav-link">Profils</Link>
+          <Link to="/profiles/search" className="nav-link">Recherche</Link>
           <Link to="/profile/visitors" className="nav-link">Mes visiteurs</Link>
         </Fragment>
         :
