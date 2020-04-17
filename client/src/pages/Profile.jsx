@@ -1,9 +1,12 @@
 import React, { Component } from 'react';
-import { Spinner, Card, Carousel } from 'react-bootstrap';
+import { Spinner, Card, Carousel, Button } from 'react-bootstrap';
 import { withRouter, Redirect } from 'react-router-dom';
 import { Layout, ProfilePreview } from '../components';
 import PageContainer from '../containers/PageContainer';
 import Axios from 'axios';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { FaHeart, faHeart } from '@fortawesome/free-solid-svg-icons';
+
 
 const { REACT_APP_API_BASE_URL } = process.env;
 
@@ -31,6 +34,7 @@ class Profile extends Component
   state = {
     user: null,
     notFound: false,
+    heartDisabled: true,
   }
 
   componentDidMount = async () => {
@@ -58,6 +62,22 @@ class Profile extends Component
       }
     }
 
+    const response = await Axios.get(
+      `${REACT_APP_API_BASE_URL}/profile/heart/${id}`,
+      {
+        withCredentials: true,
+      }
+    )
+
+    if (
+      response.status === 204 ||
+      response.status === 200 && (new Date() - new Date(response.data.createdAt.date)) >= 86400000
+    ) {
+      this.setState({ heartDisabled: false })
+    }
+
+    console.log(response);
+
     await Axios.post(
       `${REACT_APP_API_BASE_URL}/profile/visit/${id}`,
       null,
@@ -67,10 +87,30 @@ class Profile extends Component
     );
   }
 
+  sendHeart = async () => {
+    const { match } = this.props;
+    const id = match.params.id;
+
+    try {
+      await Axios.post(
+        `${REACT_APP_API_BASE_URL}/profile/heart/${id}`,
+        null,
+        {
+          withCredentials: true,
+        }
+      );
+
+      this.setState({ heartDisabled: true });
+    }
+    catch (error) {
+      console.error(error);
+    }
+  }
+
   render = () => {
     const { global } = this.props;
 
-    const { user, notFound } = this.state;
+    const { user, notFound, heartDisabled } = this.state;
 
     if (notFound) {
       return <Redirect to="/notfound" />;
@@ -87,7 +127,12 @@ class Profile extends Component
     return (
       <Layout global={global}>
         <div className="grid-1-3">
-          <ProfilePreview user={user} visited />
+          <div>
+            <ProfilePreview user={user} visited />
+            <Button variant="outline-danger" onClick={this.sendHeart} disabled={heartDisabled}>
+              <FontAwesomeIcon icon={faHeart} />
+            </Button>
+          </div>
           { user.galleryPictures.length === 0 ?
             <div>
               Cet utilisateur n'a pas encore posté de photo...

@@ -7,8 +7,18 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * @ORM\Entity(repositoryClass="App\Repository\HeartRepository")
  */
-class Heart
+class Heart implements \JsonSerializable
 {
+    public function jsonSerialize()
+    {
+        return [
+            'id' => $this->id,
+            'createdAt' => $this->createdAt,
+            'senderId' => $this->sender->getId(),
+            'recipientId' => $this->recipient->getId(),
+        ];
+    }
+
     /**
      * @ORM\Id()
      * @ORM\GeneratedValue()
@@ -32,6 +42,11 @@ class Heart
      * @ORM\JoinColumn(name="recipient_id", referencedColumnName="id", onDelete="CASCADE")
      */
     private $recipient;
+
+    public function __construct()
+    {
+        $this->createdAt = new \DateTime();
+    }
 
     public function getId(): ?int
     {
